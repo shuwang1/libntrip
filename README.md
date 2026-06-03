@@ -1,6 +1,6 @@
 # libntrip-swift: A modern, high-performance Swift implementation of the **NTRIP** (Networked Transport of RTCM via Internet Protocol) protocol.
 
-
+[![CI](https://github.com/shuwang1/libntrip/actions/workflows/ci.yml/badge.svg)](https://github.com/shuwang1/libntrip/actions/workflows/ci.yml)
 
 `libntrip-swift` is a Swift 6 port and evolution of the original Orientable AI internal project. It provides a type-safe, asynchronous framework for streaming Global Navigation Satellite System (GNSS) correction data.
 
@@ -42,7 +42,6 @@ swift test
 ## Documentation
 
 - **Installation & Usage**: See [INSTALL.md](INSTALL.md) for detailed setup and execution instructions.
-- **Development Standards**: See [GEMINI.md](GEMINI.md) for architectural guidelines and conventions.
 - **API Reference**: Generate local documentation with `swift package generate-documentation`.
 
 ## License
