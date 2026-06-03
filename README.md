@@ -42,7 +42,6 @@ swift test
 ## Documentation
 
 - **Installation & Usage**: See [INSTALL.md](INSTALL.md) for detailed setup and execution instructions.
-- **Development Standards**: See [GEMINI.md](GEMINI.md) for architectural guidelines and conventions.
 - **API Reference**: Generate local documentation with `swift package generate-documentation`.
 
 ## License
