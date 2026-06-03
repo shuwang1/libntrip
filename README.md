@@ -42,7 +42,7 @@ swift test
 ## Documentation
 
 - **Installation & Usage**: See [INSTALL.md](INSTALL.md) for detailed setup and execution instructions.
-- **API Reference**: Generate local documentation with `swift package generate-documentation`.
+- **API Reference**: Generate local documentation with `swift package generate-docc-reference`.
 
 ## License
 
