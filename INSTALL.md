@@ -98,7 +98,7 @@ swift test --filter BitReaderTests
 You can generate a local developer guide using Swift's DocC:
 
 ```bash
-swift package generate-documentation
+swift package docc
 ```
 
 ## Logging
