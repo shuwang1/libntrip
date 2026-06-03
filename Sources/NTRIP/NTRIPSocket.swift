@@ -59,7 +59,11 @@ public final class NTRIPSocket: @unchecked Sendable {
             throw SocketError.dnsLookupFailed(host)
         }
         
+        #if os(Linux)
         let connectStatus = Glibc.connect(fd, addr, res!.pointee.ai_addrlen)
+        #else
+        let connectStatus = Darwin.connect(fd, addr, res!.pointee.ai_addrlen)
+        #endif
         if connectStatus == -1 {
             throw SocketError.connectionFailed("errno: \(errno)")
         }
@@ -73,7 +77,11 @@ public final class NTRIPSocket: @unchecked Sendable {
         var buffer = [UInt8](repeating: 0, count: maxLength)
         
         while true {
+            #if os(Linux)
             let bytesRead = Glibc.read(fd, &buffer, maxLength)
+            #else
+            let bytesRead = Darwin.read(fd, &buffer, maxLength)
+            #endif
             if bytesRead > 0 {
                 return Data(buffer.prefix(bytesRead))
             } else if bytesRead == 0 {
@@ -95,9 +103,13 @@ public final class NTRIPSocket: @unchecked Sendable {
         
         while totalSent < count {
             let chunk = data.subdata(in: totalSent..<count)
-            let sent = try await chunk.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Int in
+            let sent = chunk.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Int in
                 let basePtr = ptr.baseAddress!.assumingMemoryBound(to: UInt8.self)
+                #if os(Linux)
                 return Glibc.write(fd, basePtr, chunk.count)
+                #else
+                return Darwin.write(fd, basePtr, chunk.count)
+                #endif
             }
             
             if sent > 0 {
@@ -132,8 +144,3 @@ public final class NTRIPSocket: @unchecked Sendable {
         close()
     }
 }
-
-// Helper to fix Glibc/Darwin ambiguity
-#if os(macOS) || os(iOS)
-private let Glibc = Darwin
-#endif
