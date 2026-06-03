@@ -17,8 +17,12 @@ jobs:
     
     - name: Build Documentation
       run: |
-        swift package --allow-writing-to-directory ./docs generate-docc-reference \
-          --output-path ./docs --transform-for-static-hosting --hosting-base-path libntrip-swift
+        swift package --allow-writing-to-directory ./docs \
+          generate-documentation --target libntrip-swift \
+          --output-path ./docs \
+          --transform-for-static-hosting \
+          --hosting-base-path libntrip-swift
+
           
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
