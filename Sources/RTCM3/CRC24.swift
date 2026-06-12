@@ -1,6 +1,12 @@
 import Foundation
 
 public struct CRC24 {
+    // ⚡ Bolt: Precomputed lookup table for CRC24 calculation.
+    // 💡 What: Replaces bit-by-bit CRC calculation with a precomputed 256-element lookup table.
+    // 🎯 Why: Calculating CRC bit-by-bit requires an inner loop of 8 iterations per byte.
+    //         Table lookup performs the same in O(1) time per byte.
+    // 📊 Impact: Drastically reduces CPU cycles spent verifying RTCM3 message integrity,
+    //            yielding significant performance improvements for large data streams.
     // ⚡ Bolt: A precomputed lookup table to replace the O(n) inner loop with an O(1) array lookup.
     // This provides a ~2.5x speedup to CRC24 calculation which is frequently used by RTCM3 data.
     private static let table: [UInt32] = {
