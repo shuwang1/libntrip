@@ -186,17 +186,28 @@ internal final class BitReader {
         guard bits > 0 && bits <= 64 else { return nil }
         guard bitOffset + bits <= data.count * 8 else { return nil }
         
+        // ⚡ Bolt: Process data byte-by-byte instead of bit-by-bit to reduce loop iterations
+        // and redundant calculations. This transforms an O(bits) operation into O(bytes).
         var result: UInt64 = 0
-        for i in 0..<bits {
-            let currentBitIndex = bitOffset + i
-            let byteIndex = currentBitIndex / 8
-            let bitInByteIndex = 7 - (currentBitIndex % 8)
-            if (data[byteIndex] & (1 << bitInByteIndex)) != 0 {
-                result |= (UInt64(1) << (bits - 1 - i))
-            }
+        var bitsRemaining = bits
+
+        while bitsRemaining > 0 {
+            let byteIndex = bitOffset / 8
+            let bitInByteIndex = bitOffset % 8
+            let bitsAvailableInByte = 8 - bitInByteIndex
+            let bitsToRead = min(bitsRemaining, bitsAvailableInByte)
+
+            let byteVal = Int(data[byteIndex])
+            let mask = (1 << bitsToRead) - 1
+            let shift = bitsAvailableInByte - bitsToRead
+            let extractedBits = UInt64((byteVal >> shift) & mask)
+
+            result = (result << bitsToRead) | extractedBits
+
+            bitOffset += bitsToRead
+            bitsRemaining -= bitsToRead
         }
         
-        bitOffset += bits
         return Int(result)
     }
     
@@ -204,17 +215,27 @@ internal final class BitReader {
         guard bits > 0 && bits <= 64 else { return nil }
         guard bitOffset + bits <= data.count * 8 else { return nil }
         
+        // ⚡ Bolt: Process data byte-by-byte instead of bit-by-bit to reduce loop iterations
+        // and redundant calculations. This transforms an O(bits) operation into O(bytes).
         var result: UInt64 = 0
-        for i in 0..<bits {
-            let currentBitIndex = bitOffset + i
-            let byteIndex = currentBitIndex / 8
-            let bitInByteIndex = 7 - (currentBitIndex % 8)
-            if (data[byteIndex] & (1 << bitInByteIndex)) != 0 {
-                result |= (UInt64(1) << (bits - 1 - i))
-            }
-        }
+        var bitsRemaining = bits
         
-        bitOffset += bits
+        while bitsRemaining > 0 {
+            let byteIndex = bitOffset / 8
+            let bitInByteIndex = bitOffset % 8
+            let bitsAvailableInByte = 8 - bitInByteIndex
+            let bitsToRead = min(bitsRemaining, bitsAvailableInByte)
+
+            let byteVal = Int(data[byteIndex])
+            let mask = (1 << bitsToRead) - 1
+            let shift = bitsAvailableInByte - bitsToRead
+            let extractedBits = UInt64((byteVal >> shift) & mask)
+
+            result = (result << bitsToRead) | extractedBits
+
+            bitOffset += bitsToRead
+            bitsRemaining -= bitsToRead
+        }
         
         // Handle signed bit
         if bits < 64 {
